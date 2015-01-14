@@ -1,5 +1,5 @@
 FROM phusion/baseimage:0.9.8
-MAINTAINER Nick Stenning <nick@whiteink.com>
+MAINTAINER Shaun Stanworth <shaun.stanworth@onefinestay.com>
 
 ENV HOME /root
 
@@ -15,6 +15,12 @@ RUN apt-get -y update
 
 # Install slapd
 RUN LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -y slapd
+
+# Samba schema
+ADD samba.ldif /etc/ldap/schema/samba.ldif
+ADD samba.schema /etc/ldap/schema/samba.schema
+RUN echo "include         /etc/ldap/schema/samba.schema" >> /usr/share/slapd/slapd.conf
+RUN echo "include: file:///etc/ldap/schema/samba.ldif" >> /usr/share/slapd/slapd.init.ldif
 
 # Default configuration: can be overridden at the docker command line
 ENV LDAP_ROOTPASS toor
