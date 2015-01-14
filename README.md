@@ -1,12 +1,14 @@
-## slapd
+## slapd, with Samba schema
+
+Based on, and many thanks to, https://github.com/nickstenning/docker-slapd
 
 A basic configuration of the OpenLDAP server, slapd, with support for data
-volumes.
+volumes, and Samba schema applied.
 
 This image will initialize a basic configuration of slapd. Most common schemas
 are preloaded (all the schemas that come preloaded with the default Ubuntu
-Precise install of slapd), but the only record added to the directory will be
-the root organisational unit.
+Precise install of slapd), as well as the aforementioned Samba schema, but the 
+only record added to the directory will be the root organisational unit.
 
 You can (and should) configure the following by providing environment variables
 to `docker run`:
@@ -21,14 +23,17 @@ to `docker run`:
 For example, to start a container running slapd for the `mycorp.com` domain,
 with data stored in `/data/ldap` on the host, use the following:
 
-    docker run -v /data/ldap:/var/lib/ldap \
+    docker run -p 389:389
+               -v /data/ldap:/var/lib/ldap \
                -e LDAP_DOMAIN=mycorp.com \
                -e LDAP_ORGANISATION="My Mega Corporation" \
                -e LDAP_ROOTPASS=s3cr3tpassw0rd \
                -d nickstenning/slapd
 
-You can find out which port the LDAP server is bound to on the host by running
-`docker ps` (or `docker port <container_id> 389`). You could then load an LDIF
+The example above will expose LDAP over the standard port 389 (through the 
+`-p` option), but if you chose to omit it you can find out which port the 
+LDAP server is bound to on the host by running `docker ps` (or 
+`docker port <container_id> 389`). You could then load an LDIF
 file (to set up your directory) like so:
 
     ldapadd -h localhost -p <host_port> -c -x -D cn=admin,dc=mycorp,dc=com -W -f
