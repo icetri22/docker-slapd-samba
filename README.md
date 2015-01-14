@@ -23,12 +23,14 @@ to `docker run`:
 For example, to start a container running slapd for the `mycorp.com` domain,
 with data stored in `/data/ldap` on the host, use the following:
 
+```bash
     docker run -p 389:389
                -v /data/ldap:/var/lib/ldap \
                -e LDAP_DOMAIN=mycorp.com \
                -e LDAP_ORGANISATION="My Mega Corporation" \
                -e LDAP_ROOTPASS=s3cr3tpassw0rd \
-               -d nickstenning/slapd
+               -d shauns/docker-slapd-samba
+```
 
 The example above will expose LDAP over the standard port 389 (through the 
 `-p` option), but if you chose to omit it you can find out which port the 
@@ -36,8 +38,9 @@ LDAP server is bound to on the host by running `docker ps` (or
 `docker port <container_id> 389`). You could then load an LDIF
 file (to set up your directory) like so:
 
-    ldapadd -h localhost -p <host_port> -c -x -D cn=admin,dc=mycorp,dc=com -W -f
-data.ldif
+```bash
+ldapadd -h localhost -p <host_port> -c -x -D cn=admin,dc=mycorp,dc=com -W -f data.ldif
+```
 
 **NB**: Please be aware that by default docker will make the LDAP port
 accessible from anywhere if the host firewall is unconfigured.
